@@ -18,21 +18,6 @@ const shoes = [
   { name: "Fifty-Inch Heels", price: 175, type: "heel" }
 ];
 
-
-
-// app.get('/', (req, res) => {
-//   res.render('/collectibles', { 
-//     msg: 'Here is your inventory',
-//     item: {
-//       name: "friend",
-//       price : '0'
-//     },
-//     collectibles
-
-//   });
-// });
-
-
 //Q1
 app.get('/greetings/:name', (req,res) => {
   console.log(req.params.name)
@@ -41,8 +26,6 @@ app.get('/greetings/:name', (req,res) => {
 
 //Q2
 app.get('/roll/:Number', (req,res)=> {
-  // console.log(req.params.Number)
-
   const numberParm = req.params.Number
   const Maximum = parseInt(numberParm,10)
   if (!Maximum) {
@@ -57,23 +40,31 @@ res.send(`the number is ${randomroll} `)}
 
 //Q3
 app.get('/collectibles/:index', (req,res)=> {
-  // console.log(req.params.index)
-  // res.send(`<h1> ${collectibles[index]} </h1>`)
   index = req.params.index
 res.send(`So, you want the ${collectibles[index].name}? For ${collectibles[index].price}, it can be yours!`)
 })
 
+
 //Q4
-app.get('/shoes' , (req,res) =>{
-  // const minprice = req.query.min_price
-  // const price = req.params.price
-  if(req.query.min_price > shoes[price]) 
-res.send(`price less than ${req.query.min_price}`)
-  
-})
+app.get('/shoes', (req, res) => {
+  const { 'min-price': minPrice, 'max-price': maxPrice, type } = req.query;
 
+  let filteredShoes = shoes;
+  if (minPrice) {
+    const min = parseFloat(minPrice);
+    filteredShoes = filteredShoes.filter(shoe => shoe.price >= min);
+  }
 
+  if (maxPrice) {
+    const max = parseFloat(maxPrice);
+    filteredShoes = filteredShoes.filter(shoe => shoe.price <= max);
+  }
 
+  if (type) {
+    filteredShoes = filteredShoes.filter(shoe => shoe.type.toLowerCase() === type.toLowerCase());
+  }
+  res.json(filteredShoes);
+});
 
 
 app.listen(3000,()=> {
